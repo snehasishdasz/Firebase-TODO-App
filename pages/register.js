@@ -3,7 +3,7 @@ import { FcGoogle } from "react-icons/fc";
 import {auth} from "../firebase/firebase"
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-const provider = new GoogleAuthProvider();
+const provider = new GoogleAuthProvider(); //It is prebuilt . Without this we can add the sign up with google functionality.
 
 const RegisterForm = () => {
     const [username, setUsername] = useState(null);
@@ -11,24 +11,33 @@ const RegisterForm = () => {
     const [password, setPassword] = useState(null);
 
     const signupHandler = async () => {
-        if(!email || !username || !password) return;
+        if(!email || !username || !password) return;  // This means no field should be empty 
+        
         try{
             const user=await createUserWithEmailAndPassword(
                 auth,
                 email,
-                password);
+                password);  // we use "auth" because after execute the this  the current data of useris storedin auth , So we use auth in next step
                 await updateProfile(auth.currentUser,{
-                    displayName:username
-                })
+                    displayName:username  //This means it shows the username
+                     
+                })  
+              
             console.log(user)
         }catch(error){
-            console.log("An error occur",error);
+            console.error("An error occur",error);
         }
     }
 
+    // This Function is for Popup style LOGIN with Google
     const signInWithGoogle= async () => {
-        const user=await signInWithPopup(auth, provider)
-        console.log(user);
+        try{
+
+            const user=await signInWithPopup(auth, provider)
+            console.log(user);
+        }catch(error){
+            console.error("An error occur",error);
+        }
     }
 
 
