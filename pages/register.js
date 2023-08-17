@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import {auth} from "../firebase/firebase"
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useRouter } from "next/router";
+import { useAuth } from "@/firebase/auth";
+import Loader from "../components/Loader";
 
 const provider = new GoogleAuthProvider(); //It is prebuilt . Without this we can add the sign up with google functionality.
 
@@ -9,6 +12,13 @@ const RegisterForm = () => {
     const [username, setUsername] = useState(null);
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!isLoading && authUser) {
+            router.push("/");
+        }
+    }, [authUser, isLoading]);
 
     const signupHandler = async () => {
         if(!email || !username || !password) return;  // This means no field should be empty 
@@ -41,7 +51,9 @@ const RegisterForm = () => {
     }
 
 
-    return (
+    return isLoading || (!isLoading && !!authUser) ? (
+        <Loader/>
+    ): (
         <main className="flex lg:h-[100vh]">
             <div className="w-full lg:w-[60%] p-8 md:p-14 flex items-center justify-center lg:justify-start">
                 <div className="p-8 w-[600px]">
