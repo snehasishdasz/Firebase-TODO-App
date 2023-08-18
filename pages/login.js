@@ -43,7 +43,7 @@ const LoginForm = () => {
         }
     };
 
-    return isLoading || (!isLoading && !!authUser) ? (
+    return isLoading || (!isLoading && authUser) ? (
         <Loader />
     ) : (
         <main className="flex lg:h-[100vh]">

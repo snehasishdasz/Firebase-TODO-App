@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
 import {auth} from "../firebase/firebase"
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/router";
 import { useAuth } from "@/firebase/auth";
 import Loader from "../components/Loader";
+import Link from "next/link";
 
 const provider = new GoogleAuthProvider(); //It is prebuilt . Without this we can add the sign up with google functionality.
 
@@ -12,6 +13,8 @@ const RegisterForm = () => {
     const [username, setUsername] = useState(null);
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
+    const { authUser, isLoading, setAuthUser } = useAuth();
+    
     const router = useRouter();
 
     useEffect(() => {
@@ -30,8 +33,12 @@ const RegisterForm = () => {
                 password);  // we use "auth" because after execute the this  the current data of useris storedin auth , So we use auth in next step
                 await updateProfile(auth.currentUser,{
                     displayName:username  //This means it shows the username
-                     
                 })  
+                setAuthUser({
+                    uid: username.uid,
+                    email: username.email,
+                    username,
+                })
               
             console.log(user)
         }catch(error){
@@ -51,7 +58,7 @@ const RegisterForm = () => {
     }
 
 
-    return isLoading || (!isLoading && !!authUser) ? (
+    return isLoading || (!isLoading && authUser) ? (
         <Loader/>
     ): (
         <main className="flex lg:h-[100vh]">
@@ -60,9 +67,12 @@ const RegisterForm = () => {
                     <h1 className="text-6xl font-semibold">Sign Up</h1>
                     <p className="mt-6 ml-1">
                         Already have an account ?{" "}
-                        <span className="underline hover:text-blue-400 cursor-pointer">
+                        <Link
+                            href="/login"
+                            className="underline hover:text-blue-400 cursor-pointer"
+                        >
                             Login
-                        </span>
+                        </Link>
                     </p>
 
                     <div className="bg-black/[0.05] text-white w-full py-4 mt-10 rounded-full transition-transform hover:bg-black/[0.8] active:scale-90 flex justify-center items-center gap-4 cursor-pointer group" onClick={signInWithGoogle}>
